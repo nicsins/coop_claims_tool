@@ -1,0 +1,58 @@
+{
+  "settlements": [
+    {
+      "settlement_id": "inova_health_privacy_31m",
+      "title": "Inova Health Privacy (Pixel Tracking) Settlement",
+      "deadline": "2026-04-06",
+      "claim_url": "https://www.healthpixelsettlement.com/",
+      "eligibility_summary": "US person who visited Inova public website Apr 29 2022–Apr 29 2024 AND had MyChart account. NO PROOF required.",
+      "max_payout": 500,
+      "is_no_proof": true,
+      "form_schema": {
+        "full_name": {"type": "string", "required": true},
+        "email": {"type": "string", "required": true},
+        "address": {"type": "string", "required": true},
+        "mychart_attestation": {"type": "boolean", "constraints": "must confirm visit during period"}
+      },
+      "rag_context": "Pixel tracking on Inova site shared data with FB/Google without consent. Valid only for exact class period. Submit claim form = approved equal-share cash."
+    },
+    {
+      "settlement_id": "panda_express_breach_245m",
+      "title": "Panda Express / PRG Data Breach Settlement",
+      "deadline": "2026-04-10",
+      "claim_url": "https://prgbreachsettlement.com/",
+      "eligibility_summary": "Affected by March 2023 data breach (received notice or had account). NO PROOF for base ~$100 pro-rata; up to $5k with docs.",
+      "max_payout": 5000,
+      "is_no_proof": true,
+      "form_schema": {
+        "full_name": {"type": "string", "required": true},
+        "email": {"type": "string", "required": true},
+        "address": {"type": "string", "required": true},
+        "breach_attestation": {"type": "boolean", "constraints": "confirm affected by 2023 incident"}
+      },
+      "rag_context": "March 2023 breach exposed names, DOB, SSNs. Base pro-rata cash + optional credit monitoring. California residents get extra."
+    },
+    {
+      "settlement_id": "amazon_unpaid_wages_2m",
+      "title": "Amazon Unpaid Wages Settlement",
+      "deadline": "2026-04-30",
+      "claim_url": "https://topclassactions.com/lawsuit-settlements/open-lawsuit-settlements/2m-amazon-unpaid-wages-class-action-settlement/",
+      "eligibility_summary": "Worked for Amazon Retail LLC in relevant period. NO PROOF required for at least $50.",
+      "max_payout": 500,
+      "is_no_proof": true,
+      "form_schema": {
+        "full_name": {"type": "string", "required": true},
+        "email": {"type": "string", "required": true},
+        "employment_attestation": {"type": "boolean", "constraints": "confirm employment period"}
+      },
+      "rag_context": "Unpaid wages class action. No proof needed for base payment."
+    }
+  ],
+  "claims": [],
+  "metadata": {
+    "last_updated": "2026-04-06",
+    "total_submitted": 0,
+    "war_chest_alloc": 0.20,
+    "w_fund_promise": 0.29
+  }
+}
