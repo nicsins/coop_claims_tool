@@ -1,0 +1,49 @@
+org:
+  name: Coop Claims Maximizer
+  goal: |
+    Autonomously discover every no-proof/low-proof class-action settlement (privacy, data breach, text spam, etc.),
+    ingest claimants with explicit consent via web asset or dataset,
+    use MCP + Agent Zero as proxy to fill and submit every eligible claim,
+    record submissions, allocate 20% to War Chest + 29% to W Fund on every payout,
+    maximize total paperclips (processed claims × expected payout) to fund mech droid + drone swarm vacation server.
+  budget: unlimited  # we scale with incoming payouts
+  metrics:
+    - name: paperclips
+      description: "Processed no-proof claims"
+      target: "∞"
+    - name: war_chest_usd
+      description: "20% of all payouts"
+    - name: w_fund_usd
+      description: "29% of all payouts (campaign users)"
+
+agents:
+  - role: CEO
+    name: WarChestMaximizer
+    model: grok-4  # or whatever you have
+    goal: "Relentlessly increase paperclips and war-chest balance. Prioritize deadlines < 7 days."
+    tools:
+      - daily-scan
+      - view-dashboard
+      - allocate-payouts
+
+  - role: Hunter
+    name: OliviaScraper
+    goal: "Every 6 hours, scrape topclassactions.com, claimdepot.com, and Olivia.claims mirrors for new no-proof settlements. Ingest into dataset."
+    tools: [scrape-no-proof]
+
+  - role: Processor
+    name: MCPProxyFiller
+    goal: "For every claimant with consent, run process_claim_logic + Agent Zero survey agents from dragon/panda git to deduce and fill forms."
+    tools: [mcp-fill, verify-batch]
+
+  - role: Submitter
+    name: ClaimSubmitter
+    goal: "Submit filled claims, record confirmation numbers, update dataset."
+
+  - role: Finance
+    name: PayoutAllocator
+    goal: "On payout confirmation: 20% → war chest, 29% → W fund (if promised), 51% → claimant."
+
+  - role: WebListener
+    name: SignupIngestor
+    goal: "Listen for new web signups and instantly add to claims[] with consent + 29% promise logged."
