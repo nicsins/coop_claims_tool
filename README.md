@@ -11,6 +11,11 @@ Add more claimants to claims[] with "consent_received": true + raw_user_data.
 cd coop_claims_tool
 pip install -r requirements.txt
 python main.py
+
+# In a new folder: coop-claims-paperclip
+npx paperclipai onboard --yes --name "CoopClaimsMaximizer"
+# or if you prefer clone:
+# git clone https://github.com/paperclipai/paperclip.git && cd paperclip && pnpm install
 # Start your Python bridge first
 python api_server.py
 
