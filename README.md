@@ -6,3 +6,6 @@ auto locate and file zero proof claims
 → Runs forever, scrapes daily, fills via your MCP/Agent Zero, logs everything.
 First run processes Inova (deadline TODAY) + Panda.
 Add more claimants to claims[] with "consent_received": true + raw_user_data.
+cd coop_claims_tool
+pip install -r requirements.txt
+python main.py
