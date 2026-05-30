@@ -56,4 +56,8 @@ The Co-op Claims Assistant is a specialized AI agent environment designed to han
 
     **Security & maintenance agents:** see `docs/MAINTENANCE_AGENTS.md` and `paperclip-org.yaml` (SecurityGuardian, ReliabilityWatchdog).
 
+## Production launch
+
+Checklist for **no-proof-claims.com**, Stripe payouts, and stakeholder review: [`docs/PRODUCTION_LAUNCH_TODOS.md`](docs/PRODUCTION_LAUNCH_TODOS.md).
+
     2.  Then launch Paperclip (it will auto-run the org chart).
