@@ -1,5 +1,6 @@
 import json
 import os
+import uuid
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
@@ -11,6 +12,7 @@ from mcp_claim_logic import (
     mcp_submit_for_verification,
     verify_claims_batch,
 )
+from payments.ledger import default_payout_fields, ensure_payout_fields, payout_summary
 
 DATASET_FILE = os.environ.get("CLAIMS_DATASET_FILE", "claims_dataset.json")
 
@@ -100,14 +102,15 @@ def dashboard_summary(data: Dict[str, Any]) -> Dict[str, Any]:
     """JSON-serializable dashboard payload for the API."""
     claims_preview: List[Dict[str, Any]] = []
     for claim in data.get("claims", []):
-        claims_preview.append(
-            {
-                "claim_id": claim.get("claim_id"),
-                "status": claim.get("status"),
-                "verification_status": claim.get("verification_status"),
-                "settlement_id": claim.get("settlement_id"),
-            }
-        )
+        ensure_payout_fields(claim)
+        row = {
+            "claim_id": claim.get("claim_id"),
+            "status": claim.get("status"),
+            "verification_status": claim.get("verification_status"),
+            "settlement_id": claim.get("settlement_id"),
+            "payout_status": claim.get("payout_status"),
+        }
+        claims_preview.append(row)
     metadata = data.get("metadata", {})
     return {
         "claims": claims_preview,
@@ -167,7 +170,7 @@ def register_web_signup(
 ) -> Dict[str, Any]:
     """Append a consented claimant from the web signup form."""
     ensure_settlement_placeholder(data, settlement_id)
-    claim_id = f"web_{int(datetime.now().timestamp())}"
+    claim_id = f"web_{uuid.uuid4().hex[:12]}"
     claim = {
         "claim_id": claim_id,
         "settlement_id": settlement_id,
@@ -181,6 +184,7 @@ def register_web_signup(
         "deduced_form": {},
         "mcp_log": ["Web signup – consent logged"],
         "verification_status": "draft",
+        **default_payout_fields(),
     }
     data["claims"].append(claim)
     save_dataset(data)

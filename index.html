@@ -163,7 +163,24 @@
         if (!response.ok) {
           throw new Error(body.error || `Signup failed (${response.status})`);
         }
-        alert(`✅ Claim ${body.claim_id} saved to the local dataset.\n\nOpen the dashboard to review.`);
+        let msg = `✅ Claim ${body.claim_id} saved.\n\nOpen the dashboard to review.`;
+        if (confirm("Set up Stripe payout account now? (Connect onboarding)")) {
+          try {
+            const onboard = await fetch(`${API_BASE}/connect/onboard`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ claim_id: body.claim_id, email: payload.email })
+            });
+            const onboardBody = await onboard.json();
+            if (onboard.ok && onboardBody.onboarding_url) {
+              window.open(onboardBody.onboarding_url, "_blank");
+              msg += "\n\nStripe onboarding opened in a new tab.";
+            }
+          } catch (onboardErr) {
+            console.warn("Connect onboarding skipped:", onboardErr);
+          }
+        }
+        alert(msg);
         e.target.reset();
         if (confirm("Open backend dashboard?")) {
           window.open(`${API_BASE}/dashboard`, "_blank");

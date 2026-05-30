@@ -26,6 +26,13 @@ python3 -m flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 python3 -m pytest -v
 ```
 
+### Stripe payouts (mock by default)
+
+- Module: `payments/` — Connect onboarding, split math, transfers, webhooks.
+- Mock mode: `STRIPE_MOCK_MODE=true` or leave `STRIPE_SECRET_KEY` empty.
+- Admin routes: `/connect/onboard`, `/payouts/allocate`, `/payouts/transfer` (use `X-API-Key` when `CLAIMS_API_KEY` is set).
+- Launch checklist: `docs/PRODUCTION_LAUNCH_TODOS.md`.
+
 ### Maintenance agents
 
 See `docs/MAINTENANCE_AGENTS.md` and `paperclip-org.yaml` roles **SecurityGuardian** and **ReliabilityWatchdog**.

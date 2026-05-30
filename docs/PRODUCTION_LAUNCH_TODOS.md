@@ -135,7 +135,7 @@ Bring this doc + [MAINTENANCE_AGENTS.md](./MAINTENANCE_AGENTS.md) to the review 
 
 ## 4. Stripe — connect payments & fees
 
-**Not implemented in repo yet.** Recommended approach for “pay users + take our cut”: **[Stripe Connect](https://stripe.com/docs/connect)** (platform account + connected accounts for claimants).
+**Foundation implemented in `payments/`** (mock mode without `STRIPE_SECRET_KEY`). Recommended production approach: **[Stripe Connect](https://stripe.com/docs/connect)** (platform account + connected accounts for claimants).
 
 ### 4.1 Account setup
 
@@ -170,14 +170,25 @@ Bring this doc + [MAINTENANCE_AGENTS.md](./MAINTENANCE_AGENTS.md) to the review 
 
 | # | Task | Done |
 |---|------|------|
-| 4.3.1 | Add `stripe` to `requirements.txt` | [ ] |
-| 4.3.2 | `payments/stripe_client.py` — init from `STRIPE_SECRET_KEY` | [ ] |
-| 4.3.3 | `POST /connect/onboard` — create Connect account + Account Link URL | [ ] |
-| 4.3.4 | `POST /webhooks/stripe` — verify signature (`STRIPE_WEBHOOK_SECRET`) | [ ] |
-| 4.3.5 | Extend claim model: `stripe_account_id`, `payout_status`, `gross_cents`, `splits`, `stripe_transfer_id` | [ ] |
-| 4.3.6 | `POST /payouts/allocate` (admin) — given `claim_id` + `gross_cents`, compute splits & create Transfer | [ ] |
-| 4.3.7 | Idempotency keys on all payout API calls | [ ] |
-| 4.3.8 | Admin audit log (who triggered payout) | [ ] |
+| 4.3.1 | Add `stripe` to `requirements.txt` | [x] |
+| 4.3.2 | `payments/stripe_client.py` — init from `STRIPE_SECRET_KEY` | [x] |
+| 4.3.3 | `POST /connect/onboard` — create Connect account + Account Link URL | [x] |
+| 4.3.4 | `POST /webhooks/stripe` — verify signature (`STRIPE_WEBHOOK_SECRET`) | [x] |
+| 4.3.5 | Extend claim model: `stripe_account_id`, `payout_status`, `gross_cents`, `splits`, `stripe_transfer_id` | [x] |
+| 4.3.6 | `POST /payouts/allocate` (admin) — given `claim_id` + `gross_cents`, compute splits & create Transfer | [x] |
+| 4.3.7 | Idempotency keys on all payout API calls | [x] (transfer) |
+| 4.3.8 | Admin audit log (who triggered payout) | [x] (`payout_audit` on claim) |
+
+**API routes (see `.env.example`):**
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| POST | `/connect/onboard` | Start Stripe Express onboarding |
+| POST | `/connect/sync` | Refresh onboarding status from Stripe |
+| POST | `/payouts/allocate` | Split gross cents; optional `execute_transfer: true` |
+| POST | `/payouts/transfer` | Transfer claimant share only |
+| GET | `/payouts/<claim_id>` | Payout ledger for one claim |
+| POST | `/webhooks/stripe` | Stripe events (signature verified when configured) |
 
 ### 4.4 Webhook events to handle
 

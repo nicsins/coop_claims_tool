@@ -33,3 +33,30 @@ def mcp_fill(claim_id: str):
 
 def view_dashboard():
     return _request("GET", "/dashboard")
+
+
+def connect_onboard(claim_id: str, email: str):
+    return _request(
+        "POST",
+        "/connect/onboard",
+        json={"claim_id": claim_id, "email": email},
+    )
+
+
+def payouts_allocate(
+    claim_id: str,
+    gross_payout_cents: int,
+    *,
+    admin_note: str = "",
+    execute_transfer: bool = False,
+):
+    return _request(
+        "POST",
+        "/payouts/allocate",
+        json={
+            "claim_id": claim_id,
+            "gross_payout_cents": gross_payout_cents,
+            "admin_note": admin_note,
+            "execute_transfer": execute_transfer,
+        },
+    )

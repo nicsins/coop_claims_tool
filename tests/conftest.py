@@ -17,3 +17,5 @@ def dataset_path(tmp_path: Path) -> Path:
 def dataset_env(dataset_path: Path, monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setenv("CLAIMS_DATASET_FILE", str(dataset_path))
     monkeypatch.delenv("CLAIMS_API_KEY", raising=False)
+    monkeypatch.setenv("STRIPE_MOCK_MODE", "true")
+    monkeypatch.delenv("STRIPE_SECRET_KEY", raising=False)
