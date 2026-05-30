@@ -42,8 +42,38 @@ agents:
 
   - role: Finance
     name: PayoutAllocator
-    goal: "On payout confirmation: 20% → war chest, 29% → W fund (if promised), 51% → claimant."
+    goal: "On payout confirmation: 20% → war chest, 29% → W Fund (if promised), 51% → claimant."
 
   - role: WebListener
     name: SignupIngestor
     goal: "Listen for new web signups and instantly add to claims[] with consent + 29% promise logged."
+
+  - role: Security
+    name: SecurityGuardian
+    goal: |
+      Keep the service safe for local and staged use: verify CLAIMS_API_KEY is set before any public exposure,
+      audit Flask bind address (127.0.0.1 default), review dependency CVEs weekly, ensure claims_dataset.json
+      is not world-readable, and flag PII in logs. Block deploy if POST endpoints are open without API key.
+    tools:
+      - view-dashboard
+    checklist:
+      - "CLAIMS_API_KEY set when FLASK_HOST is not loopback"
+      - "No secrets in claims_dataset.json or git history"
+      - "pytest + flake8 green on main"
+      - "CORS origins limited to known dev hosts"
+
+  - role: Reliability
+    name: ReliabilityWatchdog
+    goal: |
+      Maintain operability: run pytest after changes, confirm /health and /dashboard respond,
+      monitor scraper failures (settlement_scraper logs), validate consent before process_mcp,
+      and alert when settlements approach deadline with unfilled claims.
+    tools:
+      - scrape-no-proof
+      - view-dashboard
+      - mcp-fill
+    checklist:
+      - "GET /health returns ok"
+      - "Scraper errors logged, not silently swallowed"
+      - "Web signups create auto_ingest settlement placeholder when needed"
+      - "Dataset backups before bulk processing"
