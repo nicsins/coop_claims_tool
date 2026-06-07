@@ -1,0 +1,6 @@
+[project]
+name = "coop-claims-tool"
+version = "0.1.0"
+
+[tool.vercel]
+entrypoint = "api_server:app"
