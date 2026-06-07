@@ -18,6 +18,7 @@ The Co-op Claims Assistant is a specialized AI agent environment designed to han
     ```bash
     chmod +x setup.sh
     ./setup.sh
+    cp .env.example .env   # optional: set CLAIMS_API_KEY before public exposure
     ```
 
 **Project Options:**
@@ -46,10 +47,17 @@ The Co-op Claims Assistant is a specialized AI agent environment designed to han
     # git clone [############################################] && cd paperclip && pnpm install
     ```
 
-    1.  Start your Python bridge first:
+    1.  Start your Python bridge first (localhost only by default):
 
         ```bash
         python api_server.py
+        # Production-style: export CLAIMS_API_KEY=... FLASK_HOST=0.0.0.0
         ```
+
+    **Security & maintenance agents:** see `docs/MAINTENANCE_AGENTS.md` and `paperclip-org.yaml` (SecurityGuardian, ReliabilityWatchdog).
+
+## Production launch
+
+Checklist for **no-proof-claims.com**, Stripe payouts, and stakeholder review: [`docs/PRODUCTION_LAUNCH_TODOS.md`](docs/PRODUCTION_LAUNCH_TODOS.md).
 
     2.  Then launch Paperclip (it will auto-run the org chart).

@@ -133,45 +133,72 @@
   </footer>
 
   <script>
-    document.getElementById('claimForm').addEventListener('submit', function(e) {
+    const API_BASE = window.CLAIMS_API_BASE || "http://127.0.0.1:5000";
+
+    document.getElementById('claimForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-      
-      const formData = {
-        claim_id: "web_" + Date.now().toString(36),
-        claimant_id: document.getElementById('email').value,
+
+      const payload = {
         name: document.getElementById('name').value,
         email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
         raw_user_data: document.getElementById('raw_data').value || "No specific claim details provided",
-        consent_received: true,
-        w_fund_promise: true,
-        status: "eligible_pending_fill",
-        timestamp: new Date().toISOString()
+        consent_received: document.getElementById('consent_proxy').checked,
+        w_fund_promise: document.getElementById('promise_29').checked,
+        settlement_id: "auto_ingest"
       };
-      
-      console.log("%c✅ NEW CLAIM READY FOR BACKEND", "color:#22d3ee; font-size:18px");
-      console.log(formData);
-      
-      // Copy-paste JSON for your claims_dataset.json
-      const jsonSnippet = JSON.stringify({
-        claim_id: formData.claim_id,
-        settlement_id: "auto_ingest",
-        claimant_id: formData.claimant_id,
-        status: "eligible_pending_fill",
-        consent_received: true,
-        raw_user_data: formData.raw_user_data,
-        w_fund_promise: true,
-        deduced_form: {},
-        mcp_log: ["Web signup – consent + 29% promise logged"]
-      }, null, 2);
-      
-      alert("✅ Claim submitted to MCP!\n\nCopy the JSON below and paste into your claims[] array in claims_dataset.json:\n\n" + jsonSnippet);
-      
-      // Reset form
-      e.target.reset();
-      
-      // Optional: open your local backend dashboard in new tab
-      if (confirm("Open backend dashboard in new tab?")) {
-        window.open("http://localhost:8000", "_blank"); // change port if needed
+
+      if (!payload.consent_received) {
+        alert("Consent is required to act as your proxy.");
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}/signup`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const body = await response.json();
+        if (!response.ok) {
+          throw new Error(body.error || `Signup failed (${response.status})`);
+        }
+        let msg = `✅ Claim ${body.claim_id} saved.\n\nOpen the dashboard to review.`;
+        if (confirm("Set up Stripe payout account now? (Connect onboarding)")) {
+          try {
+            const onboard = await fetch(`${API_BASE}/connect/onboard`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ claim_id: body.claim_id, email: payload.email })
+            });
+            const onboardBody = await onboard.json();
+            if (onboard.ok && onboardBody.onboarding_url) {
+              window.open(onboardBody.onboarding_url, "_blank");
+              msg += "\n\nStripe onboarding opened in a new tab.";
+            }
+          } catch (onboardErr) {
+            console.warn("Connect onboarding skipped:", onboardErr);
+          }
+        }
+        alert(msg);
+        e.target.reset();
+        if (confirm("Open backend dashboard?")) {
+          window.open(`${API_BASE}/dashboard`, "_blank");
+        }
+      } catch (err) {
+        console.warn("API signup failed, falling back to manual JSON:", err);
+        const jsonSnippet = JSON.stringify({
+          claim_id: "web_" + Date.now().toString(36),
+          settlement_id: "auto_ingest",
+          claimant_id: payload.email,
+          status: "eligible_pending_fill",
+          consent_received: true,
+          raw_user_data: payload.raw_user_data,
+          w_fund_promise: payload.w_fund_promise,
+          deduced_form: {},
+          mcp_log: ["Web signup – manual paste required"]
+        }, null, 2);
+        alert("Backend unreachable. Paste this into claims[] in claims_dataset.json:\n\n" + jsonSnippet);
       }
     });
   </script>
